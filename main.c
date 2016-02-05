@@ -95,7 +95,7 @@ int main (int argc, char *argv[])
         }
 
         ///places the deciphered array in the list of ALL deciphered arrays
-        for(i = 0; i < 1058; i++){
+        for(i = 0; i < 1025; i++){
             if(currentArray[i] == 0)
                 break;
             arrayHolder[key][i] = currentArray[i];
