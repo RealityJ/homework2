@@ -28,7 +28,7 @@ int main (int argc, char *argv[])
 
     //initialize all the registers
     for(i = 0; i < 27; i++){
-        for(j = 0; j < 1058; j++){
+        for(j = 0; j < 1025; j++){
             arrayHolder[i][j] = 0;
         }
         eCountForArrays[i] = 0;
