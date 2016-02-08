@@ -5,14 +5,18 @@
 
 
 #include <stdio.h>
-int calculateECount(int input[1025]);
+#define ringSize 27
+#define largestStringSize 1025
+#define conversionToActualValue 64
+#define spaceValue 32
+int calculateECount(int input[largestStringSize]);
 
 
 int main (int argc, char *argv[])
 {
-    int arrayHolder[27][1025];
-    int currentArray[1025];
-    int eCountForArrays[27];
+    int arrayHolder[ringSize][largestStringSize];
+    int currentArray[largestStringSize];
+    int eCountForArrays[ringSize];
     int key = 0;
     int i = 0;
     int c = 0;
@@ -21,21 +25,21 @@ int main (int argc, char *argv[])
     int previousCharHolder = 0;
     int highestECount = 0;
     int secondHighestECount = 0;
-    int outputArray[1025];
-    int originalArray[1025];
+    int outputArray[largestStringSize];
+    int originalArray[largestStringSize];
     int j =0;
 
 
     //initialize all the registers
-    for(i = 0; i < 27; i++){
-        for(j = 0; j < 1025; j++){
+    for(i = 0; i < ringSize; i++){
+        for(j = 0; j < largestStringSize; j++){
             arrayHolder[i][j] = 0;
         }
         eCountForArrays[i] = 0;
     }
 
     //initialize rest of the arrays
-    for(i = 0; i < 1025; i++){
+    for(i = 0; i < largestStringSize; i++){
         currentArray[i] = 0;
         outputArray[i] = 0;
         originalArray[i] = 0;
@@ -53,69 +57,70 @@ int main (int argc, char *argv[])
         i++;
     }
 
-    //replaces the new line, feed line, with 0
-    for (i = 0; i < 1025; i++) {
-        if(currentArray[i] == 10) {
-            currentArray[i] = 0;
-            originalArray[i] = 0;
-        }
-    }
-
+    i = 0;
     //Decyphers the original array for every key given
-    for(key = 0; key < 27; key++){
-        for(i = 0; i < 1025; i++){
+    for(key = 0; key < ringSize; key++){
+        previousChar = 0;
+        previousCharHolder = 0;
+        for(i = 0; i < largestStringSize; i++){
+
+            if(currentArray[i] == 10){
+                continue;
+            }
             if(currentArray[i] == 0)
                 break;
             else
                 currentChar = currentArray[i];
 
             //go to upper case
-            if (currentChar >= 97 && currentChar <= 122)
-                currentChar =  (currentChar - 32);
+            if (currentChar >= 'a' && currentChar <= 'z')
+                currentChar =  (currentChar - spaceValue);
 
             //go to base value
-            if (currentChar % 64 >= 1 && currentChar % 64 <= 26)
-                currentChar =  (currentChar - 64);
+            if (currentChar % conversionToActualValue >= 1 && currentChar % conversionToActualValue <= (ringSize - 1))
+                currentChar =  (currentChar - conversionToActualValue);
             else
                 currentChar = 0;
 
             //removing previous character
             previousCharHolder = currentChar;
-            currentChar = currentChar - previousChar - (key % 27);
+            currentChar = currentChar - previousChar - (key % ringSize);
             previousChar = previousCharHolder;
 
             while (currentChar < 0) {
-                currentChar = 27 + currentChar;
+                currentChar = ringSize + currentChar;
             }
+
+
             //prints out message
             if (currentChar == 0)
-                currentArray[i] = 32;
+                currentArray[i] = spaceValue;
             else
-                currentArray[i] = (currentChar + 64);
+                currentArray[i] = (currentChar + conversionToActualValue);
         }
 
         ///places the deciphered array in the list of ALL deciphered arrays
-        for(i = 0; i < 1025; i++){
+        for(i = 0; i < largestStringSize; i++){
             if(currentArray[i] == 0)
                 break;
             arrayHolder[key][i] = currentArray[i];
         }
 
         //resets the currentArray back to the original so we can decode with different key
-        for(j = 0; j < 1025; j++){
+        for(j = 0; j < largestStringSize; j++){
             currentArray[j] = originalArray[j];
         }
     }
 
     //calculates the E count for each array in the list of ALL arrays
-    for(i = 0; i < 27; i++){
+    for(i = 0; i < ringSize; i++){
         eCountForArrays[i] = calculateECount(arrayHolder[i]);
     }
 
 
     //checks to find the 2nd highest E count
     //TODO: Make sure this is the same as Dr. Brylows
-    for(i = 0; i < 27; i++){
+    for(i = 0; i < ringSize; i++){
         if(i != 0) {
             if(eCountForArrays[i] > eCountForArrays[highestECount]){
                 secondHighestECount = highestECount;
@@ -125,10 +130,10 @@ int main (int argc, char *argv[])
         }
     }
 
-    printf("most likely key is: %d\n", secondHighestECount);
+    printf("Most probable key is %d\n", secondHighestECount);
 
     //copies over the characters from the key guess to the output array
-    for (i = 0; i < 1025; i++) {
+    for (i = 0; i < largestStringSize; i++) {
         if(arrayHolder[secondHighestECount][i] == 0)
             break;
         outputArray[i] = arrayHolder[secondHighestECount][i];
@@ -136,24 +141,26 @@ int main (int argc, char *argv[])
 
     //Attemps to print out the characters in the output array
     //For some reason only the new line will allow this to print
-    for(i = 0; i < 1025; i++){
-        if(outputArray[i] == 0)
+    for(i = 0; i < largestStringSize; i++){
+        if(outputArray[i] == 0){
+            printf("\n");
             break;
+        }
         if(outputArray[i] != 0)
             printf("%c", outputArray[i]);
     }
 }
 
-int calculateECount(int input[1025]){
+int calculateECount(int input[largestStringSize]){
     int counter = 0;
     int numberOfE = 0;
-    int sentence[1025];
+    int sentence[largestStringSize];
 
-    for(counter = 0 ; counter < 1025; counter++){
+    for(counter = 0 ; counter < largestStringSize; counter++){
         sentence[counter] = input[counter];
     }
 
-    for(counter = 0; counter < 1025; counter++){
+    for(counter = 0; counter < largestStringSize; counter++){
         if(input[counter] == 0){
             break;
         }
