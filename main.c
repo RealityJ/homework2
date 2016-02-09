@@ -5,6 +5,7 @@
 
 
 #include <stdio.h>
+//constants that define
 #define ringSize 27
 #define largestStringSize 1025
 #define conversionToActualValue 64
@@ -24,7 +25,7 @@ int main (int argc, char *argv[])
     int previousChar = 0;
     int previousCharHolder = 0;
     int highestECount = 0;
-    int secondHighestECount = 0;
+    int secondHighestECount = -1;
     int outputArray[largestStringSize];
     int originalArray[largestStringSize];
     int j =0;
@@ -67,6 +68,7 @@ int main (int argc, char *argv[])
             if(currentArray[i] == 10){
                 continue;
             }
+            //saves time incase we reached the end
             if(currentArray[i] == 0)
                 break;
             else
@@ -87,6 +89,7 @@ int main (int argc, char *argv[])
             currentChar = currentChar - previousChar - (key % ringSize);
             previousChar = previousCharHolder;
 
+            //adds when negative
             while (currentChar < 0) {
                 currentChar = ringSize + currentChar;
             }
@@ -121,13 +124,16 @@ int main (int argc, char *argv[])
     //checks to find the 2nd highest E count
     //TODO: Make sure this is the same as Dr. Brylows
     for(i = 0; i < ringSize; i++){
-        if(i != 0) {
-            if(eCountForArrays[i] > eCountForArrays[highestECount]){
-                secondHighestECount = highestECount;
-                highestECount = i;
-            }else if( eCountForArrays[i] > eCountForArrays[secondHighestECount])
-                secondHighestECount = i;
+        if (eCountForArrays[i] > eCountForArrays[highestECount] && i != 0) {
+            secondHighestECount = highestECount;
+            highestECount = i;
         }
+        else if (eCountForArrays[i] > eCountForArrays[secondHighestECount] && i != 0)
+            secondHighestECount = i;
+    }
+
+    if(secondHighestECount == -1 || eCountForArrays[secondHighestECount] == 0){
+        secondHighestECount = 0;
     }
 
     printf("Most probable key is %d\n", secondHighestECount);
@@ -139,7 +145,7 @@ int main (int argc, char *argv[])
         outputArray[i] = arrayHolder[secondHighestECount][i];
     }
 
-    //Attemps to print out the characters in the output array
+    //Attempts to print out the characters in the output array
     //For some reason only the new line will allow this to print
     for(i = 0; i < largestStringSize; i++){
         if(outputArray[i] == 0){
